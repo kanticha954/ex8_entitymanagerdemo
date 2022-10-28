@@ -9,6 +9,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 import model.Address;
 import model.Customer;
 
@@ -70,8 +71,12 @@ public class EntityManagerDemo {
         add4.setCountry("TH");
         add4.setZipcode("30500");
         
-        List<Customer> cusList = findAllCustomer();
-       printAllCustomer(cusList);
+        List<Customer> customerList = findAllCustomer();
+        printAllCustomer(customerList);
+        
+        List<Customer> cusList = findByCity("Bangkok");
+        printCustomerByCity(cusList);
+        
         
         
 /*
@@ -135,13 +140,10 @@ public class EntityManagerDemo {
         EntityManager em = emf.createEntityManager();
         Customer cus = em.find(Customer.class, id);
         
-        em.close();
-        
+        em.close();   
         return cus;
-        
+       
     }
-    
-    
     
     public static List<Customer> findAllCustomer() {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("EntityManagerDemoPU");
@@ -157,7 +159,35 @@ public class EntityManagerDemo {
            System.out.print(cus.getFirstname() + " ");
            System.out.println(cus.getLastname() + " ");
            System.out.println(cus.getEmail() + " ");
+           System.out.println();
+           
        }
+    }
+    
+    public static List<Customer> findByCity(String city) {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("EntityManagerDemoPU");
+        EntityManager em = emf.createEntityManager();
+        String jpql = "SELECT cus FROM Customer cus WHERE cus.city = :city";
+        //Address add = em.find(Address.class, city);
+        Query query = em.createQuery(jpql);
+        query.setParameter("city", city);
+        List<Customer> cusList = (List<Customer>) query.getResultList();
+        return cusList;
+    }
+   
+    
+    public static void printCustomerByCity(List<Customer> cusList) {
+        for(Customer cus : cusList) {
+           System.out.print(cus.getId() + " ");
+           System.out.print(cus.getFirstname() + " ");
+           System.out.println(cus.getLastname() + " ");
+           System.out.println(cus.getEmail() + " ");
+           System.out.println();
+           
+       }
+    }
+    
+  
     }
     
     
@@ -165,4 +195,4 @@ public class EntityManagerDemo {
     
     
     
-}
+
